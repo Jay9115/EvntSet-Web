@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
 import Signup from './pages/Signup';
 import ProfilePage from './pages/ProfilePage';
+import AddEventPage from './pages/AddEventPage';
 
 function App() {
   return (
@@ -34,7 +35,9 @@ function App() {
             <Route path="/register" element={<RegistrationPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            
+            <Route path="/add-event" element={<AddEventPage />} />
+
+
           </Routes>
         </main>
         <footer className="bg-gray-900 text-white py-8">
