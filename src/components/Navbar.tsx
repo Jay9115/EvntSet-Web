@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Bell, User, LogIn, Menu, X } from 'lucide-react';
+import { Calendar, Bell, User, LogIn, Menu, X, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
@@ -18,22 +18,6 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link to="/events" className="text-gray-600 hover:text-indigo-600">Events</Link>
-            <Link to="/calendar" className="text-gray-600 hover:text-indigo-600">Calendar</Link>
-            <Link to="./Organizer" className="text-gray-600 hover:text-indigo-600">Organizers</Link>
-            <div className="flex items-center space-x-4">
-              <Bell className="h-5 w-5 text-gray-600 hover:text-indigo-600 cursor-pointer" />
-              <Link to="/profile">
-                <User className="h-5 w-5 text-gray-600 hover:text-indigo-600 cursor-pointer" />
-              </Link>
-              <Link to="/login" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center">
-                <LogIn className="h-4 w-4 mr-2" />
-                Login
-              </Link>
-            </div>
-          </div>
            <div className="hidden md:flex items-center space-x-8">
             <Link to="/events" className="text-gray-600 hover:text-indigo-600">Events</Link>
             <Link to="/calendar" className="text-gray-600 hover:text-indigo-600">Calendar</Link>
@@ -47,6 +31,14 @@ const Navbar = () => {
                 <LogIn className="h-4 w-4 mr-2" />
                 Login
               </Link>
+
+              {/* plus button  */}
+
+              <Link to="/add-event" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center">
+                <Plus className="h-4 w-4 " />
+                
+              </Link>
+
             </div>
           </div>
 
