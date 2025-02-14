@@ -26,34 +26,6 @@ const events = [
     attendees: 500,
     description: "Experience the vibrant culture and talents of our college community."
   },
-
-  // editing starts
-  {
-    id: 3,
-    title: "Sports Fest",
-    date: "January 15, 2025",
-    time: "10:00 AM",
-    location: "Sports Complex",
-    category: "Sports",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80",
-    attendees: 120,
-    description: "Playing together, winning together."
-  },
-
-  { id: 4,
-    title: "Sports Fest",
-    date: "January 15, 2025",
-    time: "10:00 AM",
-    location: "Sports Complex",
-    category: "Sports",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80",
-    attendees: 120,
-    description: "Playing together, winning together."},
-
-  // editing ends
-
-
-
   // Add more events as needed
 ];
 

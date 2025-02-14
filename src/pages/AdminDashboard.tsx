@@ -112,38 +112,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Recent Users */}
-          <div className="bg-white rounded-lg shadow-md">
-            <div className="p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-800">Recent Users</h2>
-            </div>
-            <div className="p-6">
-              <div className="space-y-6">
-                {recentUsers.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-indigo-600" />
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                        <p className="text-sm text-gray-500">{user.email}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-900">{user.role}</p>
-                      <p className="text-sm text-gray-500">{user.joinDate}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <button className="mt-6 text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                View all users →
-              </button>
-            </div>
-          </div>
-
-          {/* Recent Events */}
+         
           <div className="bg-white rounded-lg shadow-md">
             <div className="p-6 border-b">
               <h2 className="text-xl font-bold text-gray-800">Recent Events</h2>

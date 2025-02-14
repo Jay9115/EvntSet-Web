@@ -66,7 +66,7 @@ const ProfilePage = () => {
               <div className="flex items-center">
                 <BookOpen className="w-5 h-5 text-gray-400 mr-3" />
                 <div>
-                  <p className="text-sm text-gray-500">Collage ID</p>
+                  <p className="text-sm text-gray-500">Student ID</p>
                   <p className="text-gray-800">{user.studentId}</p>
                 </div>
               </div>
