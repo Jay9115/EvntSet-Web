@@ -55,16 +55,14 @@ const AdminDashboard = () => {
             <h1 className="text-xl font-bold text-gray-800">Admin Dashboard</h1>
             <div className="flex items-center space-x-4">
               <button className="p-2 text-gray-400 hover:text-gray-500">
-                <Bell className="h-6 w-6" />
+           
               </button>
               <button className="p-2 text-gray-400 hover:text-gray-500">
-                <Settings className="h-6 w-6" />
+               
               </button>
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                  <User className="h-5 w-5 text-indigo-600" />
-                </div>
-                <span className="text-sm font-medium text-gray-700">Admin</span>
+               
+               
               </div>
             </div>
           </div>
@@ -111,9 +109,9 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="p-1 flex gap-8 w-full ">
          
-          <div className="bg-white rounded-lg shadow-md">
+          <div className="bg-white rounded-lg shadow-md flex-1">
             <div className="p-6 border-b">
               <h2 className="text-xl font-bold text-gray-800">Recent Events</h2>
             </div>
@@ -143,7 +141,44 @@ const AdminDashboard = () => {
               </button>
             </div>
           </div>
+
+          <div className="bg-white rounded-lg shadow-md flex-1">
+           <div className="p-6 border-b">
+             <h2 className="text-xl font-bold text-gray-800">Recent Events 1</h2>
+           </div>
+           <div className="p-6">
+             <div className="space-y-6">
+               {recentEvents.map((event) => (
+                 <div key={event.id} className="flex items-center justify-between">
+                   <div>
+                     <p className="text-sm font-medium text-gray-900">{event.title}</p>
+                     <p className="text-sm text-gray-500">{event.organizer}</p>
+                   </div>
+                   <div className="text-right">
+                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                       event.status === 'Approved' 
+                         ? 'bg-green-100 text-green-800'
+                         : 'bg-yellow-100 text-yellow-800'
+                     }`}>
+                       {event.status}
+                     </span>
+                     <p className="text-sm text-gray-500 mt-1">{event.date}</p>
+                   </div>
+                 </div>
+               ))}
+             </div>
+             <button className="mt-6 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+               View all events →
+             </button>
+           </div>
+         </div>
         </div>
+
+{/* S */}
+
+
+{/* E */}
+        
       </div>
     </div>
   );

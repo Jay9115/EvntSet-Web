@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { Calendar, Bell, User, Menu, X, PlusCircle, Newspaper, LogOut } from 'lucide-react';
+import { Calendar, Bell, User, Menu, X, PlusCircle, Newspaper, LogOut, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import Logo from './logo.png';
+
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: Calendar },
+    { name: 'Home', href: '/', icon: Home
+
+      
+    },
+    { name: 'Dashboard', href: '/dashboard', icon: Calendar },
     { name: 'Create Event', href: '/create-event', icon: PlusCircle },
     { name: 'Calendar', href: '/calendar', icon: Calendar },
     { name: 'News', href: '/news', icon: Newspaper },
@@ -18,7 +24,9 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Calendar className="h-8 w-8 text-indigo-600" />
+            {/* <Calendar className="h-8 w-8 text-indigo-600" /> */}
+            {/* <img className='w-[50px] h-[50px]' src="/logo.png" alt="" /> */}
+            <img className='w-[50px] h-[50px]' src={Logo} alt="" />
             <span className="ml-2 text-xl font-bold text-gray-800">EvetSet</span>
           </div>
 
@@ -47,7 +55,7 @@ const Navbar = () => {
                 className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
               >
                 <LogOut className="h-4 w-4 mr-2" />
-                Logout
+                Log In
               </Link>
             </div>
           </div>
