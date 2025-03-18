@@ -1,25 +1,39 @@
 import React, { useState } from 'react';
-import { Mail, Lock, LogIn } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import {  Lock, LogIn } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { postRequest } from '../services/apiService';
 
 const AdminLogin = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
-    remember: false
+    remember: false,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login:', formData);
+    try {
+      const response = await postRequest('/login', {
+        username: formData.username,
+        password: formData.password,
+      });
+      const { token, user } = response;
+      localStorage.setItem('token', token);
+      alert(`Welcome, ${user.name}`);
+      navigate('/dashboard'); // Redirect to the dashboard
+    } catch (error) {
+      console.error(error);
+      alert('Login failed. Please check your credentials.');
+    }
   };
 
   return (
@@ -29,7 +43,7 @@ const AdminLogin = () => {
           <LogIn className="h-12 w-12 text-indigo-600" />
         </div>
         <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-          Sign in to Admin Portal
+          Sign in to EvntSet
         </h2>
       </div>
 
@@ -37,21 +51,20 @@ const AdminLogin = () => {
         <div className="bg-white py-8 px-4 shadow-md rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Username
               </label>
               <div className="mt-1 relative">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="username"
+                  name="username"
+                  type="text"
+                  autoComplete="username"
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  value={formData.email}
+                  value={formData.username}
                   onChange={handleChange}
                 />
-                <Mail className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
             </div>
 

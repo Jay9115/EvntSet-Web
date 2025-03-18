@@ -136,23 +136,7 @@ const CreateEvent = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Organizer Name
-          </label>
-          <textarea
-            name="description"
-            value={eventData.description}
-            onChange={handleChange}
-            rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            required
-          ></textarea>
-        </div>
- 
-            {/* start  */}
-
-            <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description 
+            Description
           </label>
           <textarea
             name="description"
@@ -164,22 +148,6 @@ const CreateEvent = () => {
           ></textarea>
         </div>
 
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Event Rules & Guidelines
-          </label>
-          <textarea
-            name="description"
-            value={eventData.description}
-            onChange={handleChange}
-            rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            required
-          ></textarea>
-        </div>
-
-            {/* Ends  */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Event Image URL
