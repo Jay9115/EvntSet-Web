@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, LogIn } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { postRequest } from '../services/apiService';
 
 const LoginPage = () => {
@@ -61,9 +61,9 @@ const LoginPage = () => {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
             create a new account
-          </a>
+          </Link>
         </p>
       </div>
 
@@ -130,9 +130,9 @@ const LoginPage = () => {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+                <Link to="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
                   Forgot your password?
-                </a>
+                </Link>
               </div>
             </div>
 

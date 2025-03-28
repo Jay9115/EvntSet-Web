@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Users } from 'lucide-react';
+import { Mail, Lock, User, Building, Calendar, Phone, UserPlus } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { postRequest } from '../services/apiService';
 
 const RegistrationPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    studentId: '',
-    department: '',
-    year: '',
-    dietaryRestrictions: '',
-    specialRequirements: ''
+    Name: '',
+    Username: '',
+    Email: '',
+    Password: '',
+    confirmPassword: '',
+    Department: '',
+    Gender: '',
+    Birthdate: '',
+    Mobile: ''
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -21,199 +28,256 @@ const RegistrationPage = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', formData);
-  };
+    
+    // Validate passwords match
+    if (formData.Password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
 
-  // Mock event data
-  const event = {
-    title: "Tech Innovation Summit",
-    date: "March 15, 2024",
-    time: "10:00 AM",
-    location: "Main Auditorium",
-    category: "Technology",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80",
-    attendees: 120,
-    description: "Join us for a day of innovation and technology insights with industry experts."
+    setLoading(true);
+    setError('');
+
+    try {
+      // Prepare data for API
+      const registrationData = {
+        Name: formData.Name,
+        Username: formData.Username,
+        Department: formData.Department,
+        Year: "2",
+        Gender: formData.Gender,
+        Birthdate: formData.Birthdate,
+        Residence: "DayScholar",
+        Mobile: formData.Mobile,
+        Email: formData.Email,
+        Password: formData.Password
+      };
+
+      // Send request to the correct endpoint
+      const response = await postRequest('/register', registrationData);
+
+      // Show success message and redirect to login
+      alert('Registration successful! You can now log in.');
+      navigate('/login');
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-gray-800 mb-8">Event Registration</h1>
-          
-          {/* Event Details Card */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div className="flex flex-col md:flex-row gap-6">
-              <img src={event.image} alt={event.title} className="w-full md:w-1/3 h-48 object-cover rounded-lg" />
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">{event.title}</h2>
-                <p className="text-gray-600 mb-4">{event.description}</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center text-gray-600">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    <span>{event.date}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span>{event.time}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span>{event.location}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <Users className="h-4 w-4 mr-2" />
-                    <span>{event.attendees} attending</span>
-                  </div>
-                </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex justify-center">
+          <UserPlus className="h-12 w-12 text-indigo-600" />
+        </div>
+        <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+          Create your account
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Already have an account?{' '}
+          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Sign in
+          </Link>
+        </p>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow-md rounded-lg sm:px-10">
+          {error && (
+            <div className="mb-4 p-2 bg-red-100 text-red-700 rounded border border-red-200 text-sm">
+              {error}
+            </div>
+          )}
+
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="Name" className="block text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <div className="mt-1 relative">
+                <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                <input
+                  id="Name"
+                  name="Name"
+                  type="text"
+                  required
+                  className="pl-10 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.Name}
+                  onChange={handleChange}
+                />
               </div>
             </div>
-          </div>
 
-          {/* Registration Form */}
-          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Full Name
-                </label>
+            <div>
+              <label htmlFor="Username" className="block text-sm font-medium text-gray-700">
+                Username
+              </label>
+              <div className="mt-1 relative">
+                <UserPlus className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input
+                  id="Username"
+                  name="Username"
                   type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   required
+                  className="pl-10 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.Username}
+                  onChange={handleChange}
                 />
               </div>
-              
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address
-                </label>
+            </div>
+
+            <div>
+              <label htmlFor="Email" className="block text-sm font-medium text-gray-700">
+                Email address
+              </label>
+              <div className="mt-1 relative">
+                <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input
+                  id="Email"
+                  name="Email"
                   type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  autoComplete="email"
                   required
+                  className="pl-10 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.Email}
+                  onChange={handleChange}
                 />
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number
-                </label>
+            <div>
+              <label htmlFor="Password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="mt-1 relative">
+                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  id="Password"
+                  name="Password"
+                  type="password"
+                  autoComplete="new-password"
                   required
+                  className="pl-10 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.Password}
+                  onChange={handleChange}
                 />
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="studentId" className="block text-sm font-medium text-gray-700 mb-1">
-                  Student ID
-                </label>
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <div className="mt-1 relative">
+                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input
-                  type="text"
-                  id="studentId"
-                  name="studentId"
-                  value={formData.studentId}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
                   required
+                  className="pl-10 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
                 />
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1">
-                  Department
-                </label>
+            <div>
+              <label htmlFor="Department" className="block text-sm font-medium text-gray-700">
+                Department
+              </label>
+              <div className="mt-1 relative">
+                <Building className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 <select
-                  id="department"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  id="Department"
+                  name="Department"
                   required
+                  className="pl-10 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.Department}
+                  onChange={handleChange}
                 >
                   <option value="">Select Department</option>
-                  <option value="computer-science">Computer Science</option>
-                  <option value="engineering">Engineering</option>
-                  <option value="business">Business</option>
-                  <option value="arts">Arts</option>
+                  <option value="DEPSTAR">DEPSTAR</option>
+                  <option value="CSPIT">CSPIT</option>
+                  <option value="CMPICA">CMPICA</option>
+                  <option value="PDPIAS">PDPIAS</option>
                 </select>
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="year" className="block text-sm font-medium text-gray-700 mb-1">
-                  Year of Study
-                </label>
+            <div>
+              <label htmlFor="Gender" className="block text-sm font-medium text-gray-700">
+                Gender
+              </label>
+              <div className="mt-1 relative">
+                <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 <select
-                  id="year"
-                  name="year"
-                  value={formData.year}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  id="Gender"
+                  name="Gender"
                   required
+                  className="pl-10 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.Gender}
+                  onChange={handleChange}
                 >
-                  <option value="">Select Year</option>
-                  <option value="1">First Year</option>
-                  <option value="2">Second Year</option>
-                  <option value="3">Third Year</option>
-                  <option value="4">Fourth Year</option>
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
             </div>
 
-            <div className="mt-6">
-              <label htmlFor="dietaryRestrictions" className="block text-sm font-medium text-gray-700 mb-1">
-                Dietary Restrictions
+            <div>
+              <label htmlFor="Birthdate" className="block text-sm font-medium text-gray-700">
+                Date of Birth
               </label>
-              <input
-                type="text"
-                id="dietaryRestrictions"
-                name="dietaryRestrictions"
-                value={formData.dietaryRestrictions}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="Optional"
-              />
+              <div className="mt-1 relative">
+                <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                <input
+                  id="Birthdate"
+                  name="Birthdate"
+                  type="date"
+                  required
+                  className="pl-10 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.Birthdate}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
 
-            <div className="mt-6">
-              <label htmlFor="specialRequirements" className="block text-sm font-medium text-gray-700 mb-1">
-                Special Requirements
+            <div>
+              <label htmlFor="Mobile" className="block text-sm font-medium text-gray-700">
+                Mobile Number
               </label>
-              <textarea
-                id="specialRequirements"
-                name="specialRequirements"
-                value={formData.specialRequirements}
-                onChange={handleChange}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="Optional"
-              />
+              <div className="mt-1 relative">
+                <Phone className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                <input
+                  id="Mobile"
+                  name="Mobile"
+                  type="tel"
+                  pattern="[0-9]{10}"
+                  required
+                  className="pl-10 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.Mobile}
+                  onChange={handleChange}
+                  placeholder="10-digit mobile number"
+                />
+              </div>
             </div>
 
-            <div className="mt-8">
+            <div>
               <button
                 type="submit"
-                className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-300 font-semibold"
+                disabled={loading}
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
               >
-                Register for Event
+                {loading ? 'Creating account...' : 'Create account'}
               </button>
             </div>
           </form>

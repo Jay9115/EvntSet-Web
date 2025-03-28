@@ -9,6 +9,7 @@ import NewsEditor from './components/NewsEditor';
 import AdminLogin from './pages/AdminLogin';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
+import RegistrationPage from './pages/RegistrationPage';
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const token = localStorage.getItem('token');
@@ -20,7 +21,7 @@ const AppRoutes = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!token && window.location.pathname !== '/' && window.location.pathname !== '/login') {
+    if (!token && window.location.pathname !== '/' && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
       navigate('/'); // Force redirect to login if not authenticated
     }
   }, [token, navigate]);
@@ -35,12 +36,13 @@ const AppRoutes = () => {
           {/* Public Routes */}
           <Route path="/" element={token ? <Navigate to="/profile" /> : <LoginPage />} />
           <Route path="/login" element={token ? <Navigate to="/profile" /> : <LoginPage />} />
+          <Route path="/register" element={token ? <Navigate to="/profile" /> : <RegistrationPage />} />
           <Route path="/admin" element={token ? <Navigate to="/dashboard" /> : <AdminLogin />} />
 
           {/* Private Routes (Require Authentication) */}
           <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
           <Route path="/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
-          <Route path="/register" element={<PrivateRoute><AdminRegistration /></PrivateRoute>} />
+          <Route path="/register-admin" element={<PrivateRoute><AdminRegistration /></PrivateRoute>} />
           <Route path="/create-event" element={<PrivateRoute><CreateEvent /></PrivateRoute>} />
           <Route path="/calendar" element={<PrivateRoute><EventCalendar /></PrivateRoute>} />
           <Route path="/news" element={<PrivateRoute><NewsEditor /></PrivateRoute>} />
