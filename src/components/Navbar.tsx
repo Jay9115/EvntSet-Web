@@ -1,18 +1,27 @@
 import React, { useState } from 'react';
 import { Bell, User, Menu, X, PlusCircle, Newspaper, LogOut, Calendar } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: Calendar },
+    { name: 'Dashboard', href: '/dashboard', icon: Calendar },
     { name: 'Create Event', href: '/create-event', icon: PlusCircle },
     { name: 'Calendar', href: '/calendar', icon: Calendar },
     { name: 'News', href: '/news', icon: Newspaper },
   ];
+
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    // Redirect to login page
+    navigate('/login');
+  };
 
   return (
     <nav className="bg-white shadow-lg">
@@ -42,14 +51,21 @@ const Navbar = () => {
             })}
             <div className="flex items-center space-x-4">
               <Bell className="h-5 w-5 text-gray-600 hover:text-indigo-600 cursor-pointer" />
-              <User className="h-5 w-5 text-gray-600 hover:text-indigo-600 cursor-pointer" />
-              <Link
-                to="/login"
+              <Link 
+                to="/profile" 
+                className={`flex items-center text-gray-600 hover:text-indigo-600 ${
+                  location.pathname === '/profile' ? 'text-indigo-600' : ''
+                }`}
+              >
+                <User className="h-5 w-5" />
+              </Link>
+              <button
+                onClick={handleLogout}
                 className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -82,12 +98,22 @@ const Navbar = () => {
                 );
               })}
               <Link
-                to="/login"
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center justify-center"
+                to="/profile"
+                className={`flex items-center text-gray-600 hover:text-indigo-600 ${
+                  location.pathname === '/profile' ? 'text-indigo-600' : ''
+                }`}
                 onClick={() => setIsOpen(false)}
               >
+                <User className="h-5 w-5 mr-2" />
+                Profile
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center justify-center w-full"
+              >
                 <LogOut className="h-4 w-4 mr-2" />
-                Login              </Link>
+                Logout
+              </button>
             </div>
           </div>
         )}

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { Mail, Lock, LogIn } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { postRequest } from '../services/apiService';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
     remember: false
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -16,10 +21,33 @@ const LoginPage = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login
-    console.log('Login:', formData);
+    setLoading(true);
+    setError('');
+    
+    try {
+      const response = await postRequest('/login', {
+        username: formData.username,
+        password: formData.password
+      });
+      
+      if (response && response.token) {
+        // Store token and user info in localStorage
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+        
+        // Redirect to profile page
+        navigate('/profile');
+      } else {
+        setError('Invalid login response');
+      }
+    } catch (err) {
+      setError('Invalid credentials or server error');
+      console.error('Login error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,20 +69,26 @@ const LoginPage = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-md rounded-lg sm:px-10">
+          {error && (
+            <div className="mb-4 p-2 bg-red-100 text-red-700 rounded border border-red-200 text-sm">
+              {error}
+            </div>
+          )}
+          
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Username
               </label>
               <div className="mt-1 relative">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="username"
+                  name="username"
+                  type="text"
+                  autoComplete="username"
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  value={formData.email}
+                  value={formData.username}
                   onChange={handleChange}
                 />
                 <Mail className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
@@ -105,9 +139,10 @@ const LoginPage = () => {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                disabled={loading}
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
               >
-                Sign in
+                {loading ? 'Signing in...' : 'Sign in'}
               </button>
             </div>
           </form>

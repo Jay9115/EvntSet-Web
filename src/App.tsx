@@ -7,6 +7,8 @@ import CreateEvent from './components/CreateEvent';
 import EventCalendar from './components/EventCalendar';
 import NewsEditor from './components/NewsEditor';
 import AdminLogin from './pages/AdminLogin';
+import ProfilePage from './pages/ProfilePage';
+import LoginPage from './pages/LoginPage';
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const token = localStorage.getItem('token');
@@ -18,7 +20,7 @@ const AppRoutes = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!token && window.location.pathname !== '/') {
+    if (!token && window.location.pathname !== '/' && window.location.pathname !== '/login') {
       navigate('/'); // Force redirect to login if not authenticated
     }
   }, [token, navigate]);
@@ -30,10 +32,13 @@ const AppRoutes = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Routes>
-          {/* Public Route (Login) */}
-          <Route path="/" element={token ? <Navigate to="/dashboard" /> : <AdminLogin />} />
+          {/* Public Routes */}
+          <Route path="/" element={token ? <Navigate to="/profile" /> : <LoginPage />} />
+          <Route path="/login" element={token ? <Navigate to="/profile" /> : <LoginPage />} />
+          <Route path="/admin" element={token ? <Navigate to="/dashboard" /> : <AdminLogin />} />
 
           {/* Private Routes (Require Authentication) */}
+          <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
           <Route path="/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
           <Route path="/register" element={<PrivateRoute><AdminRegistration /></PrivateRoute>} />
           <Route path="/create-event" element={<PrivateRoute><CreateEvent /></PrivateRoute>} />
