@@ -58,9 +58,24 @@ const RegistrationPage = () => {
       // Send request to the correct endpoint
       const response = await postRequest('/register', registrationData);
 
-      // Show success message and redirect to login
-      alert('Registration successful! You can now log in.');
-      navigate('/login');
+      // Clear form data
+      setFormData({
+        Name: '',
+        Username: '',
+        Email: '',
+        Password: '',
+        confirmPassword: '',
+        Department: '',
+        Gender: '',
+        Birthdate: '',
+        Mobile: ''
+      });
+
+      // Show success message
+      alert('Registration successful! Please login with your credentials.');
+      
+      // Navigate to login page
+      navigate('/login', { replace: true });
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
       console.error('Registration error:', err);
