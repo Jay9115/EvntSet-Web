@@ -56,7 +56,7 @@ const RegistrationPage = () => {
       };
 
       // Send request to the correct endpoint
-      const response = await postRequest('/register', registrationData);
+      await postRequest('/auth/register', registrationData);
 
       // Clear form data
       setFormData({
@@ -75,8 +75,8 @@ const RegistrationPage = () => {
       alert('Registration successful! Please login with your credentials.');
       
       // Navigate to login page
-      navigate('/login', { replace: true });
-    } catch (err: any) {
+      navigate('/auth/login', { replace: true });
+    } catch (err: never) {
       setError(err.message || 'Registration failed. Please try again.');
       console.error('Registration error:', err);
     } finally {

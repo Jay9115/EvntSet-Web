@@ -1,49 +1,76 @@
-import React, { useState } from 'react';
-import { Search, Filter, Calendar, Clock, MapPin, Users } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Calendar, Clock, MapPin, Users, PieChart } from 'lucide-react';
+import { getEvents, getEventRegistrationStatus } from '../services/apiService';
+import { useNavigate } from 'react-router-dom';
+import { Pie } from 'react-chartjs-2';
+import 'chart.js/auto';
 
 const categories = ["All", "Academic", "Cultural", "Technology", "Sports", "Career", "Workshop"];
 
-const events = [
-  {
-    id: 1,
-    title: "Tech Innovation Summit",
-    date: "March 15, 2024",
-    time: "10:00 AM",
-    location: "Main Auditorium",
-    category: "Technology",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80",
-    attendees: 120,
-    description: "Join us for a day of innovation and technology insights with industry experts."
-  },
-  {
-    id: 2,
-    title: "Annual Cultural Fest",
-    date: "March 20, 2024",
-    time: "5:00 PM",
-    location: "College Ground",
-    category: "Cultural",
-    image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80",
-    attendees: 500,
-    description: "Experience the vibrant culture and talents of our college community."
-  },
-  // Add more events as needed
-];
+// Define the type for your event object
+interface EventType {
+  eventId: string;
+  eventName: string;
+  description: string;
+  type: string;
+  date: string;
+  time: string;
+  venue: string;
+  capacity: number;
+  posterUrl: string;
+}
 
-const EventsPage = () => {
+const EventsPage: React.FC = () => {
+  const [events, setEvents] = useState<EventType[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
+  const [registrationData, setRegistrationData] = useState<{ presentUsers: string[]; absentUsers: string[] } | null>(null);
+  const [loadingMeasure, setLoadingMeasure] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const data = await getEvents();
+        setEvents(data); // Assuming data is already in the correct format
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   const filteredEvents = events.filter(event => {
-    const matchesCategory = selectedCategory === "All" || event.category === selectedCategory;
-    const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "All" || event.type === selectedCategory;
+    const matchesSearch = event.eventName.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const handleEdit = (event: EventType) => {
+    navigate('/update-event', { state: { event } }); // Pass event data as state
+  };
+
+  const handleMeasure = async (event: EventType) => {
+    setSelectedEvent(event);
+    setLoadingMeasure(true);
+    try {
+      const data = await getEventRegistrationStatus(event.eventId);
+      setRegistrationData(data);
+    } catch (error) {
+      console.error("Error fetching registration data:", error);
+      alert("Failed to fetch registration data.");
+    } finally {
+      setLoadingMeasure(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">Events</h1>
-        
+
         {/* Search and Filter Section */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4">
@@ -80,15 +107,15 @@ const EventsPage = () => {
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredEvents.map((event) => (
-            <div key={event.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
+            <div key={event.eventId} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <img src={event.posterUrl} alt={event.eventName} className="w-full h-48 object-cover" />
               <div className="p-6">
                 <div className="flex items-center mb-2">
                   <span className="px-3 py-1 bg-indigo-100 text-indigo-600 rounded-full text-sm font-medium">
-                    {event.category}
+                    {event.type}
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">{event.title}</h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">{event.eventName}</h3>
                 <p className="text-gray-600 mb-4">{event.description}</p>
                 <div className="space-y-2 text-gray-600">
                   <div className="flex items-center">
@@ -101,20 +128,90 @@ const EventsPage = () => {
                   </div>
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-2" />
-                    <span>{event.location}</span>
+                    <span>{event.venue}</span>
                   </div>
                   <div className="flex items-center">
                     <Users className="h-4 w-4 mr-2" />
-                    <span>{event.attendees} attending</span>
+                    <span>{event.capacity} capacity</span>
                   </div>
                 </div>
-                <button className="mt-4 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-300">
-                  Register Now
-                </button>
+                <div className="flex gap-4">
+                  <button
+                    className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-300"
+                    onClick={() => handleEdit(event)}
+                  >
+                    Edit details
+                  </button>
+                  <button
+                    className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors duration-300"
+                    onClick={() => handleMeasure(event)}
+                  >
+                    Measure
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Modal for Registration Data */}
+        {selectedEvent && registrationData && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-3xl">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">{selectedEvent.eventName} - Registration Data</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Pie Chart */}
+                <div>
+                  <Pie
+                    data={{
+                      labels: ['Present Users', 'Absent Users'],
+                      datasets: [
+                        {
+                          data: [registrationData.presentUsers.length, registrationData.absentUsers.length],
+                          backgroundColor: ['#4CAF50', '#F44336'],
+                        },
+                      ],
+                    }}
+                  />
+                </div>
+
+                {/* Lists */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">Present Users</h3>
+                  <ul className="list-disc list-inside text-gray-600 mb-4">
+                    {registrationData.presentUsers.map((user, index) => (
+                      <li key={index}>{user}</li>
+                    ))}
+                  </ul>
+                  <h3 className="text-lg font-semibold text-gray-800">Absent Users</h3>
+                  <ul className="list-disc list-inside text-gray-600">
+                    {registrationData.absentUsers.map((user, index) => (
+                      <li key={index}>{user}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex justify-end mt-6">
+                <button
+                  className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+                  onClick={() => {
+                    setSelectedEvent(null);
+                    setRegistrationData(null);
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {loadingMeasure && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="text-white text-lg">Loading...</div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const navigation = [
+    { name: 'Home', href: '/allevents', icon: Calendar }, // Added Home button
     { name: 'Dashboard', href: '/dashboard', icon: Calendar },
     { name: 'Create Event', href: '/create-event', icon: PlusCircle },
     { name: 'Calendar', href: '/calendar', icon: Calendar },

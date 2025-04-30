@@ -1,90 +1,87 @@
-import React, { useState, useRef, ChangeEvent } from 'react';
-import { createEvent } from '../services/apiService'; // update path as needed
+import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { updateEvent } from '../services/apiService'; // Update the path as needed
 
-const CreateEvent = () => {
+const Updateevent = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const eventToEdit = location.state?.event;
+
   const [eventData, setEventData] = useState({
+    eventId: '',
     title: '',
     description: '',
     date: '',
     time: '',
-    location: '',
+    venue: '',
     capacity: '',
-    category: '',
     contactUs: '',
     coordinators: '',
     department: '',
     type: '',
-    venue: ''
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (eventToEdit) {
+      setEventData({
+        eventId: eventToEdit.eventId,
+        capacity: eventToEdit.capacity.toString(),
+        contactUs: eventToEdit.contactUs || '',
+        coordinators: eventToEdit.coordinators?.join(', ') || '',
+        
+        title: eventToEdit.eventName,
+        description: eventToEdit.description,
+        date: eventToEdit.date,
+        time: eventToEdit.time,
+        venue: eventToEdit.venue,
+        department: eventToEdit.department || '',
+        type: eventToEdit.type,
+      });
+      setImagePreview(eventToEdit.posterUrl || null);
+    }
+  }, [eventToEdit]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const eventId = Math.floor(100 + Math.random() * 900).toString();
     const formData = new FormData();
-    // Append the poster image
-    if (!imageFile) {
-      alert("Please select an image before submitting.");
-      return;
+    if (imageFile) {
+      formData.append('poster', imageFile);
     }
-    formData.append('poster', imageFile);
-    
-    const eventDetails = {
-      EventId: eventId,
-      EventName: eventData.title,
-      Description: eventData.description,
-      Date: eventData.date,
-      Time: eventData.time,
-      Venue: eventData.venue,
+
+    const updatedEventDetails = {
+      EventId: eventData.eventId,
       Capacity: eventData.capacity,
       ContactUs: eventData.contactUs,
-      Coordinators: eventData.coordinators.split(',').map(c => c.trim()), // ✨ FIXED
+      Coordinators: eventData.coordinators.split(',').map(c => c.trim()),
+      Date: eventData.date,
+      Description: eventData.description,
+      EventName: eventData.title,
       iDepartment: eventData.department,
-      Type: eventData.type
-    };
-    
-    console.log('Sending eventDetails JSON to backend:', JSON.stringify(eventDetails, null, 2));
-    
-    // Convert to JSON string and append
-    formData.append('eventDetailsJson', JSON.stringify(eventDetails));
+      Time: eventData.time,
+      Type: eventData.type,   
+      Venue: eventData.venue,
+      };
+    console.log('Sending eventDetails JSON to backend:', JSON.stringify(updatedEventDetails, null, 2));
+    console.log('Sending eventDetails JSON to backend:', JSON.stringify(formData, null, 2));
+    formData.append('eventDetailsJson', JSON.stringify(updatedEventDetails));
+
     try {
-      const response = await createEvent(formData); // Correct function name
+      const response = await updateEvent(formData);
       if (response.ok) {
-        alert('Event created successfully!');
-        resetForm();
+        alert('Event updated successfully!');
+        navigate('/events'); // Redirect to the events page
       } else {
         const errorData = await response.json();
-        alert(`Failed to create event: ${errorData.message || 'Unknown error'}`);
+        alert(`Failed to update event: ${errorData.message || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error('Error updating event:', error);
       alert('An error occurred. Please try again.');
-    }
-  };
-
-  const resetForm = () => {
-    setEventData({
-      title: '',
-      description: '',
-      date: '',
-      time: '',
-      location: '',
-      capacity: '',
-      category: '',
-      contactUs: '',
-      coordinators: '',
-      department: '',
-      type: '',
-      venue: ''
-    });
-    setImageFile(null);
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
     }
   };
 
@@ -92,7 +89,7 @@ const CreateEvent = () => {
     const { name, value } = e.target;
     setEventData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -108,10 +105,9 @@ const CreateEvent = () => {
     reader.readAsDataURL(file);
   };
 
-
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Create New Event</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Update Event</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -215,26 +211,26 @@ const CreateEvent = () => {
             />
           </div>
           <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-  <select
-    name="type"
-    value={eventData.type}
-    onChange={handleChange}
-    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-    required
-  >
-    <option value="" disabled>Select Type</option>
-    <option value="Culture">Culture</option>
-    <option value="Sports">Sports</option>
-    <option value="Tech">Tech</option>
-    <option value="Workshop">Workshop</option>
-    <option value="Seminar">Seminar</option>
-    <option value="Conference">Conference</option>
-    <option value="Concert">Concert</option>
-    <option value="Hackathon">Hackathon</option>
-    <option value="Entertainment">Entertainment</option>
-  </select>
-</div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+            <select
+              name="type"
+              value={eventData.type}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              required
+            >
+              <option value="" disabled>Select Type</option>
+              <option value="Culture">Culture</option>
+              <option value="Sports">Sports</option>
+              <option value="Tech">Tech</option>
+              <option value="Workshop">Workshop</option>
+              <option value="Seminar">Seminar</option>
+              <option value="Conference">Conference</option>
+              <option value="Concert">Concert</option>
+              <option value="Hackathon">Hackathon</option>
+              <option value="Entertainment">Entertainment</option>
+            </select>
+          </div>
         </div>
 
         <div>
@@ -247,7 +243,7 @@ const CreateEvent = () => {
                 onClick={() => setImageFile(null)}
                 className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
               >
-               
+                Remove
               </button>
             </div>
           ) : (
@@ -264,16 +260,16 @@ const CreateEvent = () => {
         <div className="flex justify-end gap-4">
           <button
             type="button"
-            onClick={resetForm}
+            onClick={() => navigate('/events')}
             className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
           >
-            Reset
+            Cancel
           </button>
           <button
             type="submit"
             className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
-            Create Event
+            Save Changes
           </button>
         </div>
       </form>
@@ -281,4 +277,4 @@ const CreateEvent = () => {
   );
 };
 
-export default CreateEvent;
+export default Updateevent;

@@ -27,7 +27,7 @@ const LoginPage = () => {
     setError('');
     
     try {
-      const response = await postRequest('/login', {
+      const response = await postRequest('/auth/login', {
         username: formData.username,
         password: formData.password
       });
@@ -37,8 +37,8 @@ const LoginPage = () => {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         
-        // Redirect to profile page
-        navigate('/profile');
+        // Redirect to home page
+        navigate('/allevents'); // Changed from '/profile' to '/allevents'
       } else {
         setError('Invalid login response');
       }

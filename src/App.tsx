@@ -10,6 +10,8 @@ import AdminLogin from './pages/AdminLogin';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
+import EventsPage from './pages/EventsPage';
+import UpdateEvent from './components/Updateevent';
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const token = localStorage.getItem('token');
@@ -34,9 +36,9 @@ const AppRoutes = () => {
       <main className="container mx-auto px-4 py-8">
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={token ? <Navigate to="/profile" /> : <LoginPage />} />
-          <Route path="/login" element={token ? <Navigate to="/profile" /> : <LoginPage />} />
-          <Route path="/register" element={token ? <Navigate to="/profile" /> : <RegistrationPage />} />
+          <Route path="/" element={token ? <Navigate to="/allevents" /> : <LoginPage />} /> {/* Redirect to home page */}
+          <Route path="/login" element={token ? <Navigate to="/allevents" /> : <LoginPage />} />
+          <Route path="/register" element={token ? <Navigate to="/allevents" /> : <RegistrationPage />} />
           <Route path="/admin" element={token ? <Navigate to="/dashboard" /> : <AdminLogin />} />
 
           {/* Private Routes (Require Authentication) */}
@@ -46,6 +48,8 @@ const AppRoutes = () => {
           <Route path="/create-event" element={<PrivateRoute><CreateEvent /></PrivateRoute>} />
           <Route path="/calendar" element={<PrivateRoute><EventCalendar /></PrivateRoute>} />
           <Route path="/news" element={<PrivateRoute><NewsEditor /></PrivateRoute>} />
+          <Route path="/allevents" element={<PrivateRoute><EventsPage /></PrivateRoute>} /> {/* Home page */}
+          <Route path="/update-event" element={<PrivateRoute><UpdateEvent /></PrivateRoute>} />
         </Routes>
       </main>
 
