@@ -125,7 +125,7 @@ const LoginPage = () => {
                   onChange={handleChange}
                 />
                 <label htmlFor="remember" className="ml-2 block text-sm text-gray-900">
-                  Remember me
+                  Remember me!
                 </label>
               </div>
 
@@ -147,6 +147,20 @@ const LoginPage = () => {
             </div>
           </form>
         </div>
+        <div className="mt-6 text-center text-xs text-gray-500 px-4">
+  This website is a student project created for educational purposes only. It is not intended for commercial use.
+</div>
+
+<div className="mt-2 text-center">
+  <a
+    href="https://drive.google.com/uc?export=download&id=158DdJcAB0Rg9EiAyZZ1nOc4yerQBP4tq"
+    className="inline-block mt-2 px-4 py-2 text-sm text-white bg-indigo-600 rounded hover:bg-indigo-700 transition"
+    download
+  >
+    📱 Download Android App (APK)
+  </a>
+</div>
+
       </div>
     </div>
   );
