@@ -153,7 +153,7 @@ const LoginPage = () => {
 
 <div className="mt-2 text-center">
   <a
-    href="https://drive.google.com/uc?export=download&id=158DdJcAB0Rg9EiAyZZ1nOc4yerQBP4tq"
+    href="https://github.com/Mir1204/Evnt_Set-Application/releases/download/v1.0.0/app-release.apk"
     className="inline-block mt-2 px-4 py-2 text-sm text-white bg-indigo-600 rounded hover:bg-indigo-700 transition"
     download
   >
