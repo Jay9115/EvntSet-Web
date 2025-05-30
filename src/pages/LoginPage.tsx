@@ -151,7 +151,7 @@ const LoginPage = () => {
   This website is a student project created for educational purposes only. It is not intended for commercial use.
 </div>
 
-<div className="mt-2 text-center">
+<div className="mt-2 text-center">  
   <a
     href="https://github.com/Mir1204/Evnt_Set-Application/releases/download/v1.0.0/app-release.apk"
     className="inline-block mt-2 px-4 py-2 text-sm text-white bg-indigo-600 rounded hover:bg-indigo-700 transition"
